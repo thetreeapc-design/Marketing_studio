@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { adminClient } from '@/lib/supabase/admin'
+import { getAdminClient } from '@/lib/supabase/admin'
 import { generateJSON } from '@/lib/claude'
-import { buildSystemPrompt, buildSnsPostPrompt, buildCardNewsPrompt, buildInquiryPrompt } from '@/lib/prompts'
+import { buildSystemPrompt, buildSnsPostPrompt, buildCardNewsPrompt } from '@/lib/prompts'
 
 const schema = z.object({
   personaId: z.string().uuid(),
@@ -23,6 +23,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
+  const adminClient = getAdminClient()
   const { personaId, contentType, topic, platforms, cropInfo, harvestId, inputSource, slideCount, duration } = parsed.data
 
   const { data: persona, error: personaError } = await adminClient

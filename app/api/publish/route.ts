@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
+import { getAdminClient } from '@/lib/supabase/admin'
 import { publishPost as publishInstagram } from '@/lib/social/instagram'
 import { publishPost as publishNaverBlog } from '@/lib/social/naver-blog'
 import { publishPost as publishKakaoChannel } from '@/lib/social/kakao-channel'
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { contentId, publishAt } = parsed.data
-  const supabase = createClient()
+  const supabase = getAdminClient()
 
   const { data: content, error: contentError } = await supabase
     .from('contents')

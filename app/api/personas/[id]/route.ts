@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { adminClient } from '@/lib/supabase/admin'
+import { getAdminClient } from '@/lib/supabase/admin'
 
 const schema = z.object({
   name: z.string().min(1).optional(),
@@ -19,6 +19,7 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const adminClient = getAdminClient()
   const { data, error } = await adminClient
     .from('personas')
     .select('*')
@@ -38,6 +39,7 @@ export async function PATCH(
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
+  const adminClient = getAdminClient()
   const { data, error } = await adminClient
     .from('personas')
     .update(parsed.data)

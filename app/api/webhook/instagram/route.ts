@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { adminClient } from '@/lib/supabase/admin'
+import { getAdminClient } from '@/lib/supabase/admin'
 import { generateJSON } from '@/lib/claude'
 import { buildSystemPrompt, buildInquiryPrompt } from '@/lib/prompts'
 
@@ -9,21 +9,8 @@ async function postReply(commentId: string, message: string) {
   await fetch(`${BASE}/${commentId}/replies`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      message,
-      access_token: process.env.META_ACCESS_TOKEN,
-    }),
+    body: JSON.stringify({ message, access_token: process.env.META_ACCESS_TOKEN }),
   })
-}
-
-async function getDefaultPersona() {
-  const { data } = await adminClient
-    .from('personas')
-    .select('*')
-    .order('created_at')
-    .limit(1)
-    .single()
-  return data
 }
 
 export async function GET(req: NextRequest) {
@@ -31,7 +18,6 @@ export async function GET(req: NextRequest) {
   const mode = searchParams.get('hub.mode')
   const token = searchParams.get('hub.verify_token')
   const challenge = searchParams.get('hub.challenge')
-
   if (mode === 'subscribe' && token === process.env.META_WEBHOOK_VERIFY_TOKEN) {
     return new Response(challenge ?? '', { status: 200 })
   }
@@ -40,12 +26,17 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const body = await req.json()
+  if (body.object !== 'instagram') return NextResponse.json({ ok: true })
 
-  if (body.object !== 'instagram') {
-    return NextResponse.json({ ok: true })
-  }
+  const adminClient = getAdminClient()
 
-  const persona = await getDefaultPersona()
+  const { data: persona } = await adminClient
+    .from('personas')
+    .select('*')
+    .order('created_at')
+    .limit(1)
+    .single()
+
   if (!persona) return NextResponse.json({ error: 'No persona configured' }, { status: 500 })
 
   const systemPrompt = buildSystemPrompt(persona)

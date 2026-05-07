@@ -183,27 +183,34 @@ export default function ContentNewPage() {
     setGenerating(true)
     setGeneratedContents([])
 
-    const res = await fetch('/api/generate/content', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        personaId: selectedPersonaId,
-        contentType,
-        topic,
-        platforms: selectedPlatforms,
-        cropInfo: buildCropInfo() || undefined,
-        harvestId: selectedHarvestId || undefined,
-        inputSource: inputTab,
-        slideCount: contentType === 'card_news' ? Number(slideCount) : undefined,
-        duration: contentType === 'short_form_script' ? duration : undefined,
-      }),
-    })
+    let res: Response
+    let data: { contents?: unknown[]; error?: string }
+    try {
+      res = await fetch('/api/generate/content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          personaId: selectedPersonaId,
+          contentType,
+          topic,
+          platforms: selectedPlatforms,
+          cropInfo: buildCropInfo() || undefined,
+          harvestId: selectedHarvestId || undefined,
+          inputSource: inputTab,
+          slideCount: contentType === 'card_news' ? Number(slideCount) : undefined,
+          duration: contentType === 'short_form_script' ? duration : undefined,
+        }),
+      })
+      data = await res.json()
+    } catch (e) {
+      setGenerating(false)
+      toast.error('생성 실패: 서버 연결 오류. API 키를 확인하세요.')
+      return
+    }
 
-    const data = await res.json()
     setGenerating(false)
-
     if (!res.ok) { toast.error('생성 실패: ' + (data.error ?? '오류')); return }
-    setGeneratedContents(data.contents ?? [])
+    setGeneratedContents((data.contents ?? []) as Content[])
   }
 
   return (

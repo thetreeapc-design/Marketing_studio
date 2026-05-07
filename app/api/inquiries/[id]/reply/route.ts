@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
+import { getAdminClient } from '@/lib/supabase/admin'
 
 const schema = z.object({ message: z.string().min(1) })
 
@@ -14,7 +14,7 @@ export async function POST(
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  const supabase = createClient()
+  const supabase = getAdminClient()
   const { data: inquiry, error: fetchError } = await supabase
     .from('inquiries')
     .select('platform_comment_id')

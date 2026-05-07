@@ -1,11 +1,11 @@
 import { NextRequest } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
-import { createClient } from '@/lib/supabase/server'
+import { getAdminClient } from '@/lib/supabase/admin'
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 export async function POST(_req: NextRequest) {
-  const supabase = createClient()
+  const supabase = getAdminClient()
   const thirtyDaysAgo = new Date(Date.now() - 30 * 86400000).toISOString()
 
   const { data: analytics } = await supabase

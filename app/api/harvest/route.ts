@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { getAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 
 const schema = z.object({
@@ -13,7 +14,7 @@ const schema = z.object({
 })
 
 export async function GET() {
-  const supabase = createClient()
+  const supabase = getAdminClient()
   const { data, error } = await supabase
     .from('harvest_calendar')
     .select('*')
@@ -29,12 +30,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const supabase = getAdminClient()
+  const serverClient = createClient()
+  const { data: { user } } = await serverClient.auth.getUser()
+  const ownerId = user?.id ?? 'yeolmaenamu-internal'
 
   const { data, error } = await supabase
     .from('harvest_calendar')
-    .insert({ ...parsed.data, owner_id: user?.id })
+    .insert({ ...parsed.data, owner_id: ownerId })
     .select()
     .single()
 
