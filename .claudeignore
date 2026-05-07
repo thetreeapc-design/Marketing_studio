@@ -1,0 +1,10 @@
+node_modules
+.next
+.git
+*.log
+coverage
+dist
+public/fonts
+public/icons
+.env*
+*.lock
