@@ -2,9 +2,11 @@ import type { Persona } from '@/types/database'
 
 export function buildSystemPrompt(persona: Persona): string {
   const toneLabel =
-    persona.tone && Number(persona.tone) >= 50
-      ? '친근하고 따뜻한'
-      : '격식있고 전문적인'
+    persona.tone === 'friendly' ? '친근하고 따뜻한' :
+    persona.tone === 'formal'   ? '격식있고 전문적인' :
+    persona.tone === 'neutral'  ? '균형잡힌 중립적인' :
+    persona.tone && Number(persona.tone) >= 50 ? '친근하고 따뜻한' :
+    '격식있고 전문적인'
   const mode = persona.b2b_mode
     ? 'B2B (도매·기업 바이어 대상)'
     : 'B2C (일반 소비자 대상)'
