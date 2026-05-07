@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
+import { adminClient } from '@/lib/supabase/admin'
 
 const schema = z.object({
   id: z.string().uuid().optional(),
@@ -17,8 +17,7 @@ const schema = z.object({
 })
 
 export async function GET() {
-  const supabase = createClient()
-  const { data, error } = await supabase
+  const { data, error } = await adminClient
     .from('personas')
     .select('*')
     .order('created_at', { ascending: false })
@@ -33,11 +32,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  const supabase = createClient()
   const { id, ...fields } = parsed.data
 
   if (id) {
-    const { data, error } = await supabase
+    const { data, error } = await adminClient
       .from('personas')
       .update(fields)
       .eq('id', id)
@@ -47,10 +45,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ persona: data })
   }
 
-  const { data: { user } } = await supabase.auth.getUser()
-  const { data, error } = await supabase
+  const { data, error } = await adminClient
     .from('personas')
-    .insert({ ...fields, owner_id: user?.id })
+    .insert({ ...fields, owner_id: '00000000-0000-0000-0000-000000000000' })
     .select()
     .single()
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })

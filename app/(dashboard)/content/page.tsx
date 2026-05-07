@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import type { Content, ContentStatus } from '@/types/database'
 
@@ -346,11 +347,19 @@ export default function ContentPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-[#2D6A4F]">콘텐츠 관리</h1>
-        {newCount > 0 && (
-          <Badge className="bg-[#F4A261] text-white cursor-pointer" onClick={() => setNewCount(0)}>
-            {newCount} 신규
-          </Badge>
-        )}
+        <div className="flex items-center gap-2">
+          {newCount > 0 && (
+            <Badge className="bg-[#F4A261] text-white cursor-pointer" onClick={() => setNewCount(0)}>
+              {newCount} 신규
+            </Badge>
+          )}
+          <Link
+            href="/content/new"
+            className="bg-[#2D6A4F] text-white text-sm px-3 py-1.5 rounded-lg hover:bg-[#2D6A4F]/90 transition-colors font-medium"
+          >
+            + 새 콘텐츠
+          </Link>
+        </div>
       </div>
 
       <Tabs value={statusTab} onValueChange={setStatusTab}>

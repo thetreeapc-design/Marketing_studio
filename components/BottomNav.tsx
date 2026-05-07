@@ -2,12 +2,13 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, FileText, Calendar, BarChart3 } from 'lucide-react'
+import { FileText, Calendar, BarChart3, MessageCircle, User } from 'lucide-react'
 
 const NAV_ITEMS = [
-  { href: '/', label: '홈', Icon: Home },
+  { href: '/persona', label: '페르소나', Icon: User },
   { href: '/content', label: '콘텐츠', Icon: FileText },
   { href: '/calendar', label: '캘린더', Icon: Calendar },
+  { href: '/inquiries', label: '문의', Icon: MessageCircle },
   { href: '/analytics', label: '분석', Icon: BarChart3 },
 ]
 
