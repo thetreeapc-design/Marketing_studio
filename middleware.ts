@@ -34,7 +34,7 @@ export async function middleware(request: NextRequest) {
   // /auth/ 경로는 인증 처리 중이므로 통과
   if (pathname.startsWith('/auth/')) return response
 
-  const protectedPaths = ['/content', '/persona', '/calendar', '/analytics', '/inquiries']
+  const protectedPaths = ['/content', '/persona', '/calendar', '/analytics', '/inquiries', '/blog-schedule']
   if (protectedPaths.some(p => pathname.startsWith(p)) && !user) {
     return NextResponse.redirect(new URL('/login', request.url))
   }

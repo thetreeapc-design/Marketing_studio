@@ -87,3 +87,18 @@ export type Inquiry = {
   is_sales_lead: boolean
   created_at: string
 }
+
+export type BlogSchedule = {
+  id: string
+  publish_date: string
+  platform: '네이버' | '티스토리'
+  title: string
+  category: string | null
+  keywords: string[]
+  fruit: string | null
+  content_type: 'seo' | 'recipe' | 'story' | null
+  status: 'pending' | 'generated' | 'published' | 'skipped'
+  content_id: string | null
+  created_at: string
+  updated_at: string
+}
